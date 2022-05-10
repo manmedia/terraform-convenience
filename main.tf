@@ -83,5 +83,48 @@ resource "aws_security_group" "access_port_4567" {
   }
 }
 
+## For a different machine, We want to ensure that only port 22 is open for ingress from a given IP CIDR Block
+## For the above machine, we only want the egress -> ingress for port 4567 between EC2 machines
+
+resource "aws_security_group" "egress_rmi_4567" {
+  vpc_id = var.vpc_id
+  name   = "egress_rmi_4567"
+
+  tags = {
+    Name      = "EGRESS_RMI_4567"
+    Terraform = "true"
+  }
+}
+
+resource "aws_security_group_rule" "egress_rule_rmi_4567" {
+  type                     = "egress"
+  description              = "Specific TCP port egress rule"
+  from_port                = 4567
+  to_port                  = 4567
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.egress_rmi_4567.id
+  source_security_group_id = aws_security_group.ingress_rmi_4567.id
+}
+
+resource "aws_security_group" "ingress_rmi_4567" {
+  vpc_id = var.vpc_id
+  name   = "ingress_rmi_4567"
+
+  tags = {
+    Name      = "INGRESS_RMI_4567"
+    Terraform = "true"
+  }
+}
+resource "aws_security_group_rule" "ingress_rule_rmi_4567" {
+  type                     = "ingress"
+  description              = "Specific TCP port ingress rule"
+  from_port                = 4567
+  to_port                  = 4567
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.ingress_rmi_4567.id
+  source_security_group_id = aws_security_group.egress_rmi_4567.id
+
+}
+
 
 
