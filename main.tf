@@ -85,6 +85,25 @@ resource "aws_security_group" "access_port_4567" {
   }
 }
 
+# Enable Outbound calls for TCP only
+resource "aws_security_group" "enable_outbound_calls_tcp" {
+  vpc_id = var.vpc_id
+  name   = "enable_outbound_calls_tcp"
+
+  egress {
+    description = "TCP egress rule"
+    cidr_blocks = [var.source_cidr_block]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "tcp"
+  }
+
+  tags = {
+    Name      = "enable_outbound_calls_tcp"
+    Terraform = "true"
+  }
+}
+
 ## For a different machine, We want to ensure that only port 22 is open for ingress from a given IP CIDR Block
 ## For the above machine, we only want the egress -> ingress for port 4567 between EC2 machines
 
