@@ -12,3 +12,8 @@ variable "source_cidr_block" {
   sensitive   = "true"
   description = "Source address CIDR block"
 }
+
+variable "aws_target_region" {
+  description = "target region for which the automation would run"
+  type        = string
+}
