@@ -33,3 +33,8 @@ variable "launch_template_ver" {
   description = "version of the launch template"
   default     = 1
 }
+
+variable "health_check_path" {
+  description = "version of the launch template"
+  default     = "/health"
+}

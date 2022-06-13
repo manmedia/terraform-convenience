@@ -25,3 +25,7 @@ variable "availability_zone" {
   type        = string
   default     = ""
 }
+
+variable "vpc_id" {
+  default = ""
+}

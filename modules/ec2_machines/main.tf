@@ -22,4 +22,8 @@ resource "aws_instance" "my-sample-webapp-ec2" {
     delete_on_termination = true
   }
 
+  lifecycle {
+    ignore_changes = [user_data,tags]
+  }
+
 }

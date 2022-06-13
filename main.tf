@@ -41,3 +41,23 @@ module "aws_ec2_machines" {
   ec2_instance_name   = "${var.ec2_instance_name}-${count.index + 1}"
   subnet_id           = local.subnets[count.index % local.available_subnet_count]
 }
+
+# Now a target group under which these machines will be placed, and the targets
+module "ec2_target_group" {
+  source                 = "./modules/target_group"
+  alb_target_group_name  = "my-sample-webapp-group"
+  alb_communication_port = 4567
+  health_check_interval  = 15
+  health_check_port      = 4567
+  health_check_timeout   = 5
+  unhealthy_threshold    = 5
+  health_check_path      = var.health_check_path
+  vpc_id                 = var.vpc_id
+}
+
+module "ec2_target_group_attachments" {
+  source           = "./modules/target_group_attachments"
+  target_group_arn = module.ec2_target_group.target_group_arn
+  count            = length(module.aws_ec2_machines[*])
+  target_id        = module.aws_ec2_machines[count.index].instance_id
+}
