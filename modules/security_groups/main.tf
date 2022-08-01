@@ -91,10 +91,18 @@ resource "aws_security_group" "enable_outbound_calls_tcp" {
   name   = "enable_outbound_calls_tcp"
 
   egress {
-    description = "TCP egress rule"
+    description = "TCP egress rule - for port 80"
     cidr_blocks = [var.source_cidr_block]
-    from_port   = 0
-    to_port     = 0
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+  }
+
+  egress {
+    description = "TCP egress rule - for port 443"
+    cidr_blocks = [var.source_cidr_block]
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
   }
 
