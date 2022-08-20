@@ -42,22 +42,26 @@ module "aws_ec2_machines" {
   subnet_id           = local.subnets[count.index % local.available_subnet_count]
 }
 
-# Now a target group under which these machines will be placed, and the targets
-module "ec2_target_group" {
-  source                 = "./modules/target_group"
-  alb_target_group_name  = "my-sample-webapp-group"
-  alb_communication_port = 4567
-  health_check_interval  = 15
-  health_check_port      = 4567
-  health_check_timeout   = 5
-  unhealthy_threshold    = 5
-  health_check_path      = var.health_check_path
-  vpc_id                 = var.vpc_id
-}
+# Now create load balancer
 
-module "ec2_target_group_attachments" {
-  source           = "./modules/target_group_attachments"
-  target_group_arn = module.ec2_target_group.target_group_arn
-  count            = length(module.aws_ec2_machines[*])
-  target_id        = module.aws_ec2_machines[count.index].instance_id
+module "aws_application_load_balancer" {
+  source                  = "./modules/load_balancers"
+  list_of_target_ids      = toset(module.aws_ec2_machines[*].instance_id)
+  subnets_for_elb         = local.subnets
+  target_group_name       = var.target_group_name
+  target_group_vpc_id     = var.vpc_id
+  security_groups_for_elb = [module.security_groups.load_balancer_sg_id]
+  load_balancer_name      = var.load_balancer_name
+
+
+  vpc_id = var.vpc_id
+
+  elb_listener_port        = 80
+  elb_check_interval       = 10
+  elb_forward_port         = 4567
+  elb_health_check_path    = "/health"
+  elb_health_check_port    = 4567
+  elb_unhealthy_threshold  = 5
+  elb_healthy_threshold    = 5
+  elb_health_check_timeout = 5
 }

@@ -34,7 +34,44 @@ variable "launch_template_ver" {
   default     = 1
 }
 
-variable "health_check_path" {
-  description = "version of the launch template"
-  default     = "/health"
+variable "target_group_name" {
+  type = string
 }
+
+variable "load_balancer_name" {
+  type = string
+}
+
+variable "elb_healthy_threshold" {
+  type = number
+
+}
+
+variable "elb_unhealthy_threshold" {
+  type = number
+}
+
+variable "elb_check_interval" {
+  type = number
+}
+
+variable "elb_listener_port" {
+  type = number
+}
+
+variable "elb_health_check_timeout" {
+  type = number
+}
+
+variable "elb_health_check_path" {
+  type = string
+}
+
+variable "elb_health_check_port" {
+  type = number
+}
+
+variable "elb_forward_port" {
+  type = number
+}
+

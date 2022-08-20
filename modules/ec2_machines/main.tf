@@ -23,7 +23,7 @@ resource "aws_instance" "my-sample-webapp-ec2" {
   }
 
   lifecycle {
-    ignore_changes = [user_data,tags]
+    ignore_changes = [user_data, tags]
   }
 
 }
