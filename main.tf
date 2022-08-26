@@ -6,6 +6,7 @@ data "aws_availability_zones" "total_az" {
   }
 }
 
+# Total number of subnets
 data "aws_subnet_ids" "total_subnets" {
   vpc_id = var.vpc_id
 }
@@ -34,12 +35,12 @@ module "security_groups" {
 
 
 module "aws_ec2_machines" {
-  source              = "./modules/ec2_machines"
-  count               = length(local.availability_zones)
-  launch_template_id  = var.launch_template_id
-  launch_template_ver = var.launch_template_ver
-  ec2_instance_name   = "${var.ec2_instance_name}-${count.index + 1}"
-  subnet_id           = local.subnets[count.index % local.available_subnet_count]
+  source                  = "./modules/ec2_machines"
+  count                   = length(local.availability_zones)
+  launch_template_id      = var.launch_template_id
+  launch_template_version = var.launch_template_version
+  ec2_instance_name       = "${var.ec2_instance_name}-${count.index + 1}"
+  subnet_id               = local.subnets[count.index % local.available_subnet_count]
 }
 
 # Now create load balancer
@@ -56,12 +57,31 @@ module "aws_application_load_balancer" {
 
   vpc_id = var.vpc_id
 
-  elb_listener_port        = 80
-  elb_check_interval       = 10
-  elb_forward_port         = 4567
+  elb_listener_port        = var.elb_listener_port
+  elb_check_interval       = var.elb_check_interval
+  elb_forward_port         = var.elb_forward_port
   elb_health_check_path    = "/health"
-  elb_health_check_port    = 4567
-  elb_unhealthy_threshold  = 5
-  elb_healthy_threshold    = 5
-  elb_health_check_timeout = 5
+  elb_health_check_port    = var.elb_forward_port
+  elb_unhealthy_threshold  = var.elb_unhealthy_threshold
+  elb_healthy_threshold    = var.elb_healthy_threshold
+  elb_health_check_timeout = var.elb_health_check_timeout
+}
+
+# And finally, Auto Scaling Group
+module "aws_auto_scaling_group" {
+  source = "./modules/auto_scaling"
+
+  autoscaling_min_instances    = 3
+  autoscaling_desired_capacity = 3
+  autoscaling_max_instances    = 4
+
+  target_group_arns = [module.aws_application_load_balancer.target_group_arn_value]
+
+
+
+  launch_template_id      = var.launch_template_id
+  launch_template_version = var.launch_template_version
+
+  public_subnet_list = local.subnets
+
 }

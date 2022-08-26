@@ -9,7 +9,7 @@ variable "launch_template_id" {
   default     = ""
 }
 
-variable "launch_template_ver" {
+variable "launch_template_version" {
   description = "Which version does it belong to"
   type        = number
   default     = 1

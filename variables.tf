@@ -29,7 +29,7 @@ variable "launch_template_id" {
   default     = ""
 }
 
-variable "launch_template_ver" {
+variable "launch_template_version" {
   description = "version of the launch template"
   default     = 1
 }
@@ -74,4 +74,20 @@ variable "elb_health_check_port" {
 variable "elb_forward_port" {
   type = number
 }
+
+variable "autoscaling_min_instances" {
+  type    = number
+  default = 1
+}
+
+variable "autoscaling_desired_capacity" {
+  type    = number
+  default = 1
+}
+
+variable "autoscaling_max_instances" {
+  type    = number
+  default = 1
+}
+
 

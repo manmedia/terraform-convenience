@@ -4,15 +4,18 @@
 # By default - "Shutdown" means "Stop" instances
 # By default - "Delete block device upon termination"
 
-resource "aws_instance" "my-sample-webapp-ec2" {
+resource "aws_instance" "my_sample_webapp_ec2" {
   subnet_id                            = var.subnet_id
   instance_initiated_shutdown_behavior = "stop"
   disable_api_termination              = false
 
   launch_template {
     id      = var.launch_template_id
-    version = "$Latest"
+    version = var.launch_template_version
   }
+
+  # TODO sort out tags vs. tag
+  # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group#tag-and-tags
 
   tags = {
     "Name" = var.ec2_instance_name
